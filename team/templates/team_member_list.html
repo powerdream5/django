@@ -1,0 +1,57 @@
+<!-- team/templates/team/team_member_list.html -->
+{% extends 'base.html' %} {% block content %}
+<div class="text-right mb-4">
+  <a
+    href="{% url 'team_member_new' %}"
+    class="rounded-full h-8 w-8 text-xl border border-blue-600 border-solid inline-block text-center text-blue-600 hover:bg-blue-600 hover:text-white"
+    >+</a>
+</div>
+<h2 class="text-2xl font-bold mb-1">Team Members</h2>
+<div class="text-slate-400 text-sm mb-4 flex items-center justify-between">
+  <p> You have {{ object_list|length }} team member{{object_list|length|pluralize}}</p>
+  <div>
+    Sort By:
+    <form method="get" action="" class="inline">
+      <select name="sort" onchange="this.form.submit()">
+        <option value="name" {% if request.GET.sort == "name" %}selected{% endif %}>Name</option>
+        <option value="date_added" {% if request.GET.sort == "date_added" %}selected{% endif %}>Date Added</option>
+      </select>
+    </form>
+  </div>
+</div>
+{% if object_list %}
+  <ul>
+    {% for member in object_list %}
+    <li>
+      <a
+        href="{% url 'team_member_edit' member.pk %}"
+        class="block hover:bg-slate-100 p-4 flex items-center border-t border-color-gray-75 border-solid -ml-4 -mr-4"
+      >
+        <div
+          class="rounded-full h-16 w-16 flex justify-center items-center bg-gray-300 text-2xl text-white"
+        >
+          {{ member.first_name.0|upper }}{{ member.last_name.0|upper }}
+        </div>
+        <div class="ml-4">
+          <div class="text-lg font-semibold inline-flex items-center mb-1">
+            <div>{{ member.first_name }} {{ member.last_name }}</div>
+            {% if member.role == 'admin' %}
+              <span class="ml-2 bg-blue-200 text-blue-800 py-1 px-2 rounded-full text-xs">Admin</span>
+            {% endif %}
+          </div>
+          <p class="text-slate-400 text-sm">{{ member.phone }}</p>
+          <p class="text-slate-400 text-sm">{{ member.email }}</p>
+        </div>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <div class="text-center p-8">
+    <a
+    href="{% url 'team_member_new' %}"
+    class="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
+    >Add a Team Member</a>
+  </div>
+{% endif %}
+{% endblock %}
