@@ -1,17 +1,19 @@
 from django.urls import reverse_lazy
+from django.contrib import messages
 from django.views import View
-from django.views.generic import ListView, CreateView, UpdateView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from .models import TeamMember
 from .forms import TeamMemberForm
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, HttpResponseNotFound
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_protect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import render
 
 class TeamMemberListView(ListView):
     model = TeamMember
     template_name = 'team_member_list.html'
+    paginate_by = 5
 
     def get_queryset(self):
         sort_by = self.request.GET.get('sort', 'name')
@@ -25,22 +27,44 @@ class TeamMemberListView(ListView):
         
         return TeamMember.objects.filter(is_deleted=False).order_by(*sort_fields)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['total_member_counter'] = TeamMember.objects.filter(is_deleted=False).count()
+        return context
+
 class TeamMemberCreateView(CreateView):
     model = TeamMember
     form_class = TeamMemberForm
     template_name = 'team_member_form.html'
     success_url = reverse_lazy('team_member_list')
 
-class TeamMemberUpdateView(UpdateView):
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Team member created successfully!')
+        return response
+
+class TeamMemberUpdateDeleteView(UpdateView):
     model = TeamMember
     form_class = TeamMemberForm
     template_name = 'team_member_form.html'
     success_url = reverse_lazy('team_member_list')
 
-@method_decorator(csrf_protect, name='dispatch')
-@method_decorator(require_POST, name='dispatch')
-class DeleteTeamMemberView(View):
-    def post(self, request, pk, *args, **kwargs):
-        member = get_object_or_404(TeamMember, pk=pk)
-        member.delete()
-        return JsonResponse({'status': 'success'})
+    def post(self, request, *args, **kwargs):
+        if "action" in request.POST:
+            if request.POST["action"] == "delete":
+                self.object = self.get_object()
+                self.object.delete()
+                messages.success(request, 'Team member deleted successfully!')
+                return HttpResponseRedirect(self.get_success_url())
+            elif request.POST["action"] == "Save":
+                return super().post(request, *args, **kwargs)
+            
+        return super().post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Team member updated successfully!')
+        return response
+
+def custom_404(request, exception=None):
+    return render(request, '404.html', {}, status=404)

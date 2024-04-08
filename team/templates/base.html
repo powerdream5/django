@@ -8,10 +8,14 @@
     <meta name="csrf-token" content="{{ csrf_token }}">
     <title>{% block title %}Team Member Management{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.7/dist/inputmask.min.js"></script>
   </head>
   <body class="h-screen bg-slate-100">
     <main class="w-full p-0 md:p-8">
+      {% if messages %}
+        {% include 'partials/message.html' %}
+      {% endif %}
       <div
         class="container bg-white mx-auto w-full md:w-1/2 2xl:w-1/3 p-4 md:p-8"
       >
@@ -22,5 +26,6 @@
     </main>
 
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bulma-toast/2.4.4/bulma-toast.min.js" integrity="sha512-Mblf9e5nxLeT5MxzmcT1L3Esj3sBqKxAXgq+SQUf0/eaJTBvx2RXA+VP3Qjpg2zDAYSSc/j6n1Gf6oU0CW2tqw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   </body>
 </html>
