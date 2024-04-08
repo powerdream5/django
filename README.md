@@ -19,5 +19,5 @@ pipenv shell
 
 Next, run the following command:
 ```bash
-python manage.py runtest --setting=instawork.settings_test team/tests
+python manage.py test --setting=instawork.settings_test team/tests
 ```
