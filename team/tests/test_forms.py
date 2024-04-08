@@ -16,7 +16,7 @@ class TeamMemberFormTest(TestCase):
         form = TeamMemberForm(data=form_data)
         self.assertFalse(form.is_valid())
         self.assertIn('first_name', form.errors)
-        self.assertEqual(form.errors['first_name'], ['This field is required.'])
+        self.assertEqual(form.errors['first_name'], ['First name cannot be empty.'])
 
     def test_clean_last_name_empty(self):
         # Similar test for last_name
